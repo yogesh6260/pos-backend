@@ -23,4 +23,52 @@ const createCustomer = async (req, res) => {
   }
 };
 
-module.exports = { getAllCustomers, createCustomer };
+// edit customer details
+const updateCustomer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const customer = await Customers.findById(id); // Check if customer exists
+    if (!customer) {
+      res.status(404).send("Customer not found"); // Handle "not found" case
+      return;
+    }
+    const updatedCustomer = await Customers.findByIdAndUpdate(
+      id,
+      {
+        name: req.body.name,
+        contact: req.body.contact,
+        class: req.body.class,
+      },
+      { new: true }
+    ); // Return updated customer document
+
+    res.status(200).json({
+      message: "Customer Updated Successfully!",
+      customer: updatedCustomer,
+    });
+  } catch (error) {
+    console.error("Error updating customer:", error); // Log detailed error
+    res.status(500).json({ error: "Internal server error" }); // Send generic error message
+  }
+};
+
+// delete customer
+const deleteCustomer = async (req, res) => {
+  const { id } = req.params;
+  const customer = await Customers.findById(id); // Check if customer exists
+  if (!customer) {
+    res.status(404).send("Customer not found"); // Handle "not found" case
+    return;
+  }
+  await Customers.findByIdAndDelete(id);
+  res.status(200).json({
+    message: "Customer Deleted Successfully!",
+  });
+};
+
+module.exports = {
+  getAllCustomers,
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
+};
