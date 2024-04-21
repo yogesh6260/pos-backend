@@ -4,10 +4,12 @@ const customerSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      unique: true,
       required: true,
     },
     contact: {
       type: String,
+      unique: true,
       required: true,
     },
     class: {

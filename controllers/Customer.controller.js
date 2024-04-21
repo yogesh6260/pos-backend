@@ -14,9 +14,20 @@ const getAllCustomers = async (req, res) => {
 // create customer
 const createCustomer = async (req, res) => {
   try {
-    const newCustomer = new Customers(req.body);
-    await newCustomer.save();
-    res.status(201).send("Customer Created Successfully!");
+    const { name, contact } = req.body;
+    const customerExist = await Customers.findOne({
+      $or: [{ name: name }, { contact: contact }],
+    });
+    if (!customerExist) {
+      const newCustomer = new Customers(req.body);
+      await newCustomer.save();
+      res.status(201).send("Customer Created Successfully!");
+    } else {
+      console.log("Customer with name or contact already exist!");
+      res.status(400).json({
+        message: "Customer with name or contact already exist!",
+      });
+    }
   } catch (error) {
     res.status(400).send("error", error);
     console.log(error);
@@ -27,8 +38,16 @@ const createCustomer = async (req, res) => {
 const importCustomers = async (req, res) => {
   try {
     const docs = req.body;
-    const result = await Customers.insertMany(docs, { ordered: true });
-    console.log(`${result.length} Entries were inserted`);
+    const bulkOps = docs.map((doc) => ({
+      updateOne: {
+        filter: { $or: [{ name: doc.name }, { contact: doc.contact }] },
+        update: { $setOnInsert: doc }, // Insert only if document doesn't exist
+        upsert: true, // Create new document if no match is found
+      },
+    }));
+    const result = await Customers.bulkWrite(bulkOps, { ordered: true });
+    const upsertedCount = result.upsertedCount;
+    console.log(`${upsertedCount} Entries were inserted`);
     res.status(201).json({
       message: "Document Uploaded Successfully!",
       result: result,
