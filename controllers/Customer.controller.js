@@ -21,7 +21,10 @@ const createCustomer = async (req, res) => {
     if (!customerExist) {
       const newCustomer = new Customers(req.body);
       await newCustomer.save();
-      res.status(201).send("Customer Created Successfully!");
+      res.status(201).json({
+        data: newCustomer,
+        message: "Customer Created Successfully!",
+      });
     } else {
       console.log("Customer with name or contact already exist!");
       res.status(400).json({
@@ -29,7 +32,9 @@ const createCustomer = async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(400).send("error", error);
+    res.status(400).json({
+      message: error.message,
+    });
     console.log(error);
   }
 };
@@ -48,12 +53,20 @@ const importCustomers = async (req, res) => {
     const result = await Customers.bulkWrite(bulkOps, { ordered: true });
     const upsertedCount = result.upsertedCount;
     console.log(`${upsertedCount} Entries were inserted`);
-    res.status(201).json({
-      message: "Document Uploaded Successfully!",
-      result: result,
-    });
+    if (upsertedCount !== 0) {
+      res.status(201).json({
+        message: "Document Uploaded Successfully!",
+        result: result,
+      });
+    } else {
+      res.status(400).json({
+        message: "Duplicate Entries Found!",
+      });
+    }
   } catch (error) {
-    res.status(400).send("error", error);
+    res.status(400).json({
+      message: error.message,
+    });
     console.log(error);
   }
 };
