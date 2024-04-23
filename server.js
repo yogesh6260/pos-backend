@@ -30,6 +30,7 @@ app.use(morgan("dev")); // only for development use
 
 // routes
 app.use("/api/v1/customer", require("./routes/Customer.route"));
+app.use("/api/v1/bill", require("./routes/Bill.route"));
 
 // port
 const PORT = process.env.PORT || 8080;

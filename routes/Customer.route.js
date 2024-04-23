@@ -48,7 +48,7 @@ router.put("/edit/:id", updateCustomer);
 router.delete("/delete/:id", deleteCustomer);
 
 // Method -> DELETE
-// Route -> /api/v1/customer/delete/all
+// Route -> /api/v1/customer/deleteAll
 // Controller -> deleteAllCustomers
 // Params -> None
 // Visibility -> Public
