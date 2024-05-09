@@ -32,6 +32,11 @@ const BillSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
+    receiptNumber: {
+      type: String,
+      required: true,
+      unique: true,
+    },
   },
   { timestamps: true }
 );
