@@ -1,0 +1,5 @@
+Receipt number should be practically implementable.
+
+Generate random receipt number for every customer bill
+
+uuid - generate random receipt number
